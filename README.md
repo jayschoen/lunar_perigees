@@ -1,6 +1,6 @@
 # lunar perigees
 
-a packages that uses infrastructure provided by the U.S. Naval Observatory to calculate lunar perigees.
+a packages that uses infrastructure provided by [the U.S. Naval Observatory](https://aa.usno.navy.mil/data/geocentric) to calculate lunar perigees.
 
 utilizing the package will provide perigee data from the first of the current month through one year into the future.
 
