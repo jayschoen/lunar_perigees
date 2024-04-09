@@ -1,4 +1,4 @@
-# lunar-perigees
+# lunar perigees
 
 a packages that uses infrastructure provided by the U.S. Naval Observatory to calculate lunar perigees.
 
