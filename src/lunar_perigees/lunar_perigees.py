@@ -4,18 +4,35 @@ from datetime import datetime, timezone
 import numpy
 from scipy.signal import argrelextrema
 
+def _is_leap_year(year):
+  return year % 4 == 0 and (year % 100 != 0 or year % 400 == 0)
+
 def get_perigees():
-  url = "https://aa.usno.navy.mil/calculated/positions/geocentric"
+  url = "https://aa.usno.navy.mil/calculated/positions/geocentric"  
+
+  start_date = datetime.now(timezone.utc).date().replace(day = 1) # start on first day of month
+  start_month = start_date.month
+  start_year = start_date.year
+  reps = 8760
+
+  # if current month is jan and current year is LEAP
+  # or current month is feb and (current year OR next year are LEAPS)
+  # or current month is > feb and next year is LEAP
+  if (start_month == 1 and _is_leap_year(start_year)) \
+  or (start_month == 2 and (_is_leap_year(start_year) or _is_leap_year(start_year + 1))) \
+  or (start_month > 2 and _is_leap_year(start_year + 1)):
+    reps += 24
+    
 
   payload = {
     "ID": "AA",
-    "task": "5",
+    "task": "6",
     "body": "11",
-    "date": datetime.now(timezone.utc).date().replace(day = 1), # start on first day of month
-    "time": datetime.now(timezone.utc).time(),
+    "date": start_date,
+    "time": "00:00:00.000",
     "intv_mag": "1.00",
-    "intv_unit": "1",
-    "reps": "365", # number of iterations
+    "intv_unit": "2",
+    "reps": reps, # number of iterations ... hours in a year
     "submit": "Get Data"
   }
 
