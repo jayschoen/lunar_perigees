@@ -1,6 +1,8 @@
 import requests
 import re
 from datetime import datetime, timezone
+import numpy
+from scipy.signal import argrelextrema
 
 def get_perigees():
   url = "https://aa.usno.navy.mil/calculated/positions/geocentric"
@@ -9,7 +11,7 @@ def get_perigees():
     "ID": "AA",
     "task": "5",
     "body": "11",
-    "date": datetime.now(timezone.utc).date(),
+    "date": datetime.now(timezone.utc).date().replace(day = 1), # start on first day of month
     "time": datetime.now(timezone.utc).time(),
     "intv_mag": "1.00",
     "intv_unit": "1",
@@ -23,40 +25,19 @@ def get_perigees():
 
   results = re.findall(pattern, r.text, flags=re.MULTILINE)
 
-  grouped = {}
+  dates = []
+  distances = []
   for result in results:
-
     date = datetime.strptime(result[0], '%Y %b %d')
-    day = date.day
-    month = date.month
-    year = date.year
-    
-    if year not in grouped:
-      grouped[year] = {}
+    dates.append(date)
+    distances.append(float(result[1]))
 
-    if month not in grouped[year]:
-      grouped[year][month] = {}
+  x = numpy.array(distances)
+  indices = argrelextrema(x, numpy.less)
 
-    grouped[year][month][day] = float(result[1])
 
-  perigees = {}
-  for year in grouped:
-    if year not in perigees:
-      perigees[year] = {}
-    
-    for month in grouped[year]:
+  perigee_dates = []
+  for i in indices[0]:
+    perigee_dates.append(dates[i])
 
-      if month not in perigees[year]:
-        perigees[year][month] = {}
-
-      perigee_distance = min(grouped[year][month].values())
-
-      perigee_day = ''
-      for key, value in grouped[year][month].items():
-        if value == perigee_distance:
-          perigee_day = key
-          break
-      
-      perigees[year][month][perigee_day] = perigee_distance
-
-  return perigees
+  return perigee_dates
