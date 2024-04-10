@@ -13,3 +13,5 @@ instructions:
 `from lunar_perigees import lunar_perigees`
 
 eg: `print(lunar_perigees.get_perigees())`
+
+`get_perigees()` returns a `list` of `datetime` objects for easy manipulation
